@@ -129,6 +129,9 @@ class _HomePageState extends State<HomePage> {
                 ServiceWidget(
                   title: "Today's parking",
                 ),
+                ServiceWidget(
+                  title: "Top up Wallet",
+                ),
                 LimitedBox(
                   child: FutureBuilder<List<Service>>(
                     future: futureServices,

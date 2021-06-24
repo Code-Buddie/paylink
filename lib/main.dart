@@ -6,6 +6,7 @@ import 'package:paylink_app/pages/index.dart';
 import 'package:paylink_app/pages/invioce_details_page.dart';
 import 'package:paylink_app/pages/make_payment_page.dart';
 import 'package:paylink_app/pages/parking_payment_page.dart';
+import 'package:paylink_app/pages/payment_complete_page.dart';
 import 'package:paylink_app/pages/payment_history_page.dart';
 import 'package:paylink_app/pages/qr_scan_page.dart';
 import 'package:paylink_app/pages/select_payment_page.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/park-payment',
+      initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => IndexPage(),
@@ -40,6 +41,8 @@ class MyApp extends StatelessWidget {
         '/invoice': (context) => InvoiceDetailsPage(),
         '/make-payment': (context) => MakePaymentPage(),
         '/park-payment': (context) => ParkingPaymentPage(),
+        '/complete': (context) => PaymentCompletePage(),
+        '/failed': (context) => PaymentCompletePage(),
       },
     );
   }

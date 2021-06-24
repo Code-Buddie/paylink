@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:paylink_app/models/parking_info.dart';
 import 'package:paylink_app/shared/color_constants.dart';
 
@@ -17,7 +16,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _carPlates = TextEditingController();
 
-  String _selectedArea;
+  String _selectedArea = 'Nakuru West';
   bool _busy = false;
 
   var _currencies = [
@@ -34,22 +33,24 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
     "Subukia",
   ];
 
-  Completer<GoogleMapController> _controller = Completer();
+  GoogleMapController _controller;
+  String _mapStyle;
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+  static final CameraPosition _kNakuru = CameraPosition(
+    target: LatLng(-0.303099, 36.080025),
     zoom: 14.4746,
   );
 
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  Location _location = Location();
 
   @override
   void initState() {
     super.initState();
+    DefaultAssetBundle.of(context)
+        .loadString('assets/maps/map_style.json')
+        .then((string) {
+      this._mapStyle = string;
+    });
   }
 
   @override
@@ -107,16 +108,31 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                       ),
                                       child: GoogleMap(
                                         mapType: MapType.normal,
-                                        initialCameraPosition: _kGooglePlex,
+                                        initialCameraPosition: _kNakuru,
+                                        myLocationEnabled: true,
                                         onMapCreated:
                                             (GoogleMapController controller) {
-                                          _controller.complete(controller);
+                                          controller
+                                              .setMapStyle(this._mapStyle);
+                                          _controller = controller;
+                                          _location.onLocationChanged
+                                              .listen((l) {
+                                            _controller.animateCamera(
+                                              CameraUpdate.newCameraPosition(
+                                                CameraPosition(
+                                                    target: LatLng(l.latitude,
+                                                        l.longitude),
+                                                    zoom: 15),
+                                              ),
+                                            );
+                                          });
                                         },
                                       ),
                                     ),
                                     TextFormField(
                                       controller: _carPlates,
                                       keyboardType: TextInputType.name,
+                                      textCapitalization: TextCapitalization.characters,
                                       decoration: InputDecoration(
                                         labelText: 'Car Number Plates',
                                         border: new OutlineInputBorder(
@@ -140,6 +156,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                       builder: (FormFieldState<String> state) {
                                         return InputDecorator(
                                           decoration: InputDecoration(
+                                            labelText: 'Parking Zone',
                                             errorStyle: TextStyle(
                                                 color: Colors.redAccent,
                                                 fontSize: 16.0),
@@ -178,10 +195,13 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                     GestureDetector(
                                       onTap: () {
                                         if (_formKey.currentState.validate()) {
-                                          setState(() {
-                                            _busy = true;
-                                          });
-                                          _preparePayment();
+                                          if (_selectedArea != "" ||
+                                              _selectedArea != null) {
+                                            setState(() {
+                                              _busy = true;
+                                            });
+                                            _preparePayment();
+                                          }
                                         }
                                       },
                                       child: Container(
@@ -223,11 +243,6 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
             ],
           ),
         ));
-  }
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 
   void _preparePayment() async {

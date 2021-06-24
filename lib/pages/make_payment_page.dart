@@ -164,14 +164,13 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                                                 color:
                                                     ColorConstants.kblackColor,
                                               ),
-
                                             ),
                                           ),
                                         ],
                                       ),
                                       Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Container(
                                             padding: EdgeInsets.only(
@@ -186,7 +185,7 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                                                 fontSize: 7,
                                                 fontWeight: FontWeight.w500,
                                                 color:
-                                                ColorConstants.kblackColor,
+                                                    ColorConstants.kblackColor,
                                               ),
                                             ),
                                           ),
@@ -203,7 +202,7 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w600,
                                                 color:
-                                                ColorConstants.kblackColor,
+                                                    ColorConstants.kblackColor,
                                               ),
                                             ),
                                           ),
@@ -211,7 +210,7 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                                       ),
                                       Column(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Container(
                                             padding: EdgeInsets.only(
@@ -226,7 +225,7 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                                                 fontSize: 7,
                                                 fontWeight: FontWeight.w500,
                                                 color:
-                                                ColorConstants.kblackColor,
+                                                    ColorConstants.kblackColor,
                                               ),
                                             ),
                                           ),
@@ -243,7 +242,7 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w600,
                                                 color:
-                                                ColorConstants.kblackColor,
+                                                    ColorConstants.kblackColor,
                                               ),
                                             ),
                                           ),
@@ -312,6 +311,7 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                   ],
                 ),
               ),
+              /*
               Container(
                 padding: EdgeInsets.all(15.0),
                 child: Column(
@@ -389,23 +389,172 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                   ],
                 ),
               ),
+              */
+              Padding(
+                padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/complete', (Route<dynamic> route) => false);
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          // height: 80,
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: ColorConstants.kwhiteColor,
+                              border: Border.all(
+                                  color: ColorConstants.kgreenColor)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: ColorConstants.kwhiteColor,
+                                      borderRadius: BorderRadius.circular(18.0),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.credit_card,
+                                        color: ColorConstants.kgreenColor,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      LimitedBox(
+                                        child: Text(
+                                          "Pay KES " + parkingInfo.amount +" using my current number",
+                                          style: GoogleFonts.spartan(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
+                                            color: ColorConstants.kgreenColor,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.chevron_right,
+                                  color: ColorConstants.kgreenColor,
+                                ),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        )
+                      ],
+                    )),
+              ),
               Padding(
                 padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                      onPressed: null,
-                      style: TextButton.styleFrom(
-                          backgroundColor: ColorConstants.kgreenColor),
-                      child: Text(
-                        "Pay KES " + parkingInfo.amount,
-                        style: GoogleFonts.spartan(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: ColorConstants.kwhiteColor,
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/complete', (Route<dynamic> route) => false);
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          // height: 80,
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: ColorConstants.kwhiteColor,
+                              border: Border.all(
+                                  color: ColorConstants.kgreenColor)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: ColorConstants.kwhiteColor,
+                                      borderRadius: BorderRadius.circular(18.0),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.credit_card,
+                                        color: ColorConstants.kgreenColor,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      LimitedBox(
+                                        child: Text(
+                                          "Pay using other number",
+                                          style: GoogleFonts.spartan(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
+                                            color: ColorConstants.kgreenColor,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.chevron_right,
+                                  color: ColorConstants.kgreenColor,
+                                ),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
                         ),
-                      )),
-                ),
+                        SizedBox(
+                          height: 8,
+                        )
+                      ],
+                    )),
               ),
             ],
           ),

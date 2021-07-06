@@ -67,31 +67,34 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                       height: 10,
                     ),
                     Container(
-                      width: double.infinity,
+                        width: double.infinity,
+                        // height: double.infinity,
                         child: FutureBuilder<List<License>>(
-                      future: futureLicense,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          List<License> licenses = snapshot.data ?? [];
-                          return ListView.builder(
-                              itemCount: licenses.length,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: EdgeInsets.all(0),
-                              itemBuilder: (context, index) {
-                                License license = licenses[index];
-                                return new TransactionListWidget(
+                          future: futureLicense,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              List<License> licenses = snapshot.data ?? [];
+                              return ListView.builder(
+                                  itemCount: licenses.length,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  padding: EdgeInsets.all(0),
+                                  itemBuilder: (context, index) {
+                                    License license = licenses[index];
+                                    return new TransactionListWidget(
                                         description: license.name,
                                         paidOn: "Parking fees",
                                         amount: 5000);
-                              });
-                        } else if (snapshot.hasError) {
-                          return Text("${snapshot.error}");
-                        }
-                        // By default, show a loading spinner.
-                        return CircularProgressIndicator();
-                      },
-                    )),
+                                  });
+                            } else if (snapshot.hasError) {
+                              return Text("${snapshot.error}");
+                            }
+                            // By default, show a loading spinner.
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
+                        )),
                     SizedBox(
                       height: 10,
                     )

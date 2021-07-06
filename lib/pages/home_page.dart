@@ -131,6 +131,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 ServiceWidget(
                   title: "Top up Wallet",
+                  route: '/top-up',
                 ),
                 LimitedBox(
                   child: FutureBuilder<List<Service>>(

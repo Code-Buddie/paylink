@@ -11,6 +11,7 @@ import 'package:paylink_app/pages/payment_history_page.dart';
 import 'package:paylink_app/pages/qr_scan_page.dart';
 import 'package:paylink_app/pages/select_payment_page.dart';
 import 'package:paylink_app/pages/splash_screen_page.dart';
+import 'package:paylink_app/pages/top_up_wallet_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/park-payment': (context) => ParkingPaymentPage(),
         '/complete': (context) => PaymentCompletePage(),
         '/failed': (context) => PaymentCompletePage(),
+        '/top-up': (context) => TopUpWalletPage(),
       },
     );
   }

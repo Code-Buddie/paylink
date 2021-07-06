@@ -30,145 +30,163 @@ class _WalletPageState extends State<WalletPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            child: FutureBuilder<Invoice>(
-                future: futureInvoiceItems,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    Invoice currentInvoice = snapshot.data;
-                    return Container(
-                      margin: const EdgeInsets.only(
-                          left: 10, right: 10, top: 50, bottom: 30),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: setActiveColor(currentInvoice).withOpacity(0.1),
-                      ),
-                      child: Column(
+            width: double.infinity,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 35,
+                ),
+                Container(
+                  margin: EdgeInsets.all(15),
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                      color: ColorConstants.kgreenColor,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: EdgeInsets.all(15),
-                            decoration: BoxDecoration(
-                                color: setActiveColor(currentInvoice),
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10),
-                                    topRight: Radius.circular(10))),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "My Wallet",
-                                      style: GoogleFonts.spartan(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700,
-                                        color: ColorConstants.kwhiteColor,
-                                      ),
-                                    ),
-                                    Text(
-                                      currentInvoice.status,
-                                      style: GoogleFonts.spartan(
-                                        fontSize: 12,
-                                        color: ColorConstants.kwhiteColor,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  "11 June 2021",
-                                  style: GoogleFonts.spartan(
-                                    fontSize: 12,
-                                    color: ColorConstants.kwhiteColor,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
+                          Text(
+                            "My Card",
+                            style: GoogleFonts.spartan(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: ColorConstants.kwhiteColor,
                             ),
                           ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          LimitedBox(
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: currentInvoice.invoiceItems.length,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.all(0),
-                                itemBuilder: (context, index) {
-                                  InvoiceItem invoiceItem = currentInvoice
-                                      .invoiceItems
-                                      .elementAt(index);
-                                  return InvoiceItemWidget(
-                                    title: invoiceItem.name,
-                                    description: invoiceItem.description,
-                                  );
-                                }),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.all(15),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.max,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  SizedBox(
-                                      width: double.infinity,
-                                      child: Text(
-                                        "Current Balance",
-                                        style: GoogleFonts.spartan(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: ColorConstants.kblackColor,
-                                        ),
-                                        textAlign: TextAlign.right,
-                                      )),
-                                  SizedBox(
-                                      width: double.infinity,
-                                      child: Text(
-                                        "Kes 150000",
-                                        style: GoogleFonts.spartan(
-                                          fontSize: 18,
-                                          color: ColorConstants.kblackColor,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                        textAlign: TextAlign.right,
-                                      )),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                left: 15, right: 15, bottom: 15),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                  onPressed: null,
-                                  style: TextButton.styleFrom(
-                                      backgroundColor: setActiveColor(currentInvoice)),
-                                  child: Text(
-                                    "Top up Wallet",
-                                    style: GoogleFonts.spartan(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700,
-                                      color: ColorConstants.kwhiteColor,
-                                    ),
-                                  )),
+                          Text(
+                            "Card Transaction Statement",
+                            style: GoogleFonts.spartan(
+                              fontSize: 12,
+                              color: ColorConstants.kwhiteColor,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
                       ),
-                    );
-                  }else if (snapshot.hasError) {
-                    return Text("${snapshot.error.toString()} yes yes");
-                  }
-                  return LinearProgressIndicator();
-                })));
+                      Text(
+                        "11 June 2021",
+                        style: GoogleFonts.spartan(
+                          fontSize: 12,
+                          color: ColorConstants.kwhiteColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Container(
+                  padding: EdgeInsets.all(15),
+                  child: FutureBuilder<Invoice>(
+                      future: futureInvoiceItems,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          Invoice currentInvoice = snapshot.data;
+                          return Container(
+                            margin: const EdgeInsets.only(
+                                left: 10, right: 10, top: 50, bottom: 30),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: setActiveColor(currentInvoice)
+                                  .withOpacity(0.1),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                LimitedBox(
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount:
+                                          currentInvoice.invoiceItems.length,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      padding: EdgeInsets.all(0),
+                                      itemBuilder: (context, index) {
+                                        InvoiceItem invoiceItem = currentInvoice
+                                            .invoiceItems
+                                            .elementAt(index);
+                                        return InvoiceItemWidget(
+                                          title: invoiceItem.name,
+                                          description: invoiceItem.description,
+                                        );
+                                      }),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error.toString()} yes yes");
+                        }
+                        return Container(
+                            // child: LinearProgressIndicator(),
+                            );
+                      }),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              "Current Balance",
+                              style: GoogleFonts.spartan(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: ColorConstants.kblackColor,
+                              ),
+                              textAlign: TextAlign.right,
+                            )),
+                        SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              "Kes 150000",
+                              style: GoogleFonts.spartan(
+                                fontSize: 18,
+                                color: ColorConstants.kblackColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              textAlign: TextAlign.right,
+                            )),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/top-up');
+                        },
+                        style: TextButton.styleFrom(
+                            backgroundColor: ColorConstants.kgreenColor),
+                        child: Text(
+                          "Top up Card",
+                          style: GoogleFonts.spartan(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: ColorConstants.kwhiteColor,
+                          ),
+                        )),
+                  ),
+                ),
+              ],
+            )));
   }
 
   Future<Invoice> fetchInvoices() async {

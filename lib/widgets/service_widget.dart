@@ -4,8 +4,11 @@ import 'package:paylink_app/shared/color_constants.dart';
 
 class ServiceWidget extends StatelessWidget {
   final String title;
-    ServiceWidget({
-      @required this.title,
+  final String route;
+
+  const ServiceWidget({
+    @required this.title,
+    this.route = '/park-payment',
     Key key,
   }) : super(key: key);
 
@@ -13,7 +16,7 @@ class ServiceWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          Navigator.pushNamed(context, '/park-payment');
+          Navigator.pushNamed(context, route);
         },
         child: Column(
           children: [
@@ -39,9 +42,7 @@ class ServiceWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(18.0),
                         ),
                         child: Center(
-                          child: Icon(
-                              Icons.credit_card
-                          ),
+                          child: Icon(Icons.credit_card),
                         ),
                       ),
                       SizedBox(

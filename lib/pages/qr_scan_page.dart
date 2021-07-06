@@ -18,8 +18,6 @@ class _QRScanPageState extends State<QRScanPage> {
   QRViewController controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
-  final Geolocator geolocator = Geolocator()
-    ..forceAndroidLocationManager;
   Position _currentPosition;
   String _currentAddress;
 
@@ -130,33 +128,16 @@ class _QRScanPageState extends State<QRScanPage> {
     });
   }
 
-  _getCurrentLocation() {
-    geolocator
+  _getCurrentLocation() async {
+    await Geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
       setState(() {
         _currentPosition = position;
       });
-
-      _getAddressFromLatLng();
     }).catchError((e) {
       print(e);
     });
-  }
-
-  _getAddressFromLatLng() async {
-    try {
-      List<Placemark> p = await geolocator.placemarkFromCoordinates(
-          _currentPosition.latitude, _currentPosition.longitude);
-
-      Placemark place = p[0];
-
-      setState(() {
-        _currentAddress = "${place.locality}";
-      });
-    } catch (e) {
-      print(e);
-    }
   }
 
   void _initializeParkingPayment() async {

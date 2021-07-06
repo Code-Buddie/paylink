@@ -20,11 +20,13 @@ class _TopUpWalletState extends State<TopUpWalletPage> {
   final LocalAuthentication auth = LocalAuthentication();
   bool _canCheckBiometrics;
   List<BiometricType> _availableBiometrics;
-  String _authorized = 'Not Authorized';
+  String _authorizedOrNot = 'Not Authorized';
   bool _isAuthenticating = false;
 
   @override
   void initState() {
+    _checkBiometrics();
+    _getAvailableBiometrics();
     super.initState();
   }
 
@@ -300,29 +302,30 @@ class _TopUpWalletState extends State<TopUpWalletPage> {
   }
 
   Future<void> _authenticate() async {
+    // 8. this method opens a dialog for fingerprint authentication.
+    //    we do not need to create a dialog nut it popsup from device natively.
     bool authenticated = false;
     try {
-      setState(() {
-        _isAuthenticating = true;
-        _authorized = 'Authenticating';
-      });
-      authenticated = await auth.authenticateWithBiometrics(
-          localizedReason: 'Scan your fingerprint to authenticate',
-          useErrorDialogs: true,
-          stickyAuth: true);
-      setState(() {
-        _isAuthenticating = false;
-        _authorized = 'Authenticating';
-      });
-    } on PlatformException catch (e) {
+      authenticated = await auth.authenticate(
+        biometricOnly: false,
+        localizedReason: "Enter your fingerprint to proceed",
+        // message for dialog
+        useErrorDialogs: true,
+        // show error in dialog
+        stickyAuth: true, // native process
+      );
+    } catch (e) {
       print(e);
     }
     if (!mounted) return;
-
-    final String message = authenticated ? 'Authorized' : 'Not Authorized';
     setState(() {
-      _authorized = message;
+      _authorizedOrNot = authenticated ? "Authorized" : "Not Authorized";
     });
+    Navigator.pushNamed(
+      context,
+      "/process",
+      arguments: _amount.text,
+    );
   }
 
   void _cancelAuthentication() {

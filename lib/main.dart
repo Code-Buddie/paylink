@@ -8,6 +8,7 @@ import 'package:paylink_app/pages/make_payment_page.dart';
 import 'package:paylink_app/pages/parking_payment_page.dart';
 import 'package:paylink_app/pages/payment_complete_page.dart';
 import 'package:paylink_app/pages/payment_history_page.dart';
+import 'package:paylink_app/pages/payment_processing_page.dart';
 import 'package:paylink_app/pages/qr_scan_page.dart';
 import 'package:paylink_app/pages/select_payment_page.dart';
 import 'package:paylink_app/pages/splash_screen_page.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         '/complete': (context) => PaymentCompletePage(),
         '/failed': (context) => PaymentCompletePage(),
         '/top-up': (context) => TopUpWalletPage(),
+        '/process': (context)=> PaymentProcessingPage(),
       },
     );
   }

@@ -65,6 +65,7 @@ flutter:
     - assets/images/unlink.png
     - assets/images/offline.png
     - assets/images/confirm.png
+    - assets/images/card.png
     - assets/maps/map_style.json
   #   - images/a_dot_ham.jpeg
 

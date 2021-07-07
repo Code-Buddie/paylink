@@ -41,6 +41,9 @@ class _PaymentProcessingPageState extends State<PaymentProcessingPage> {
                   child: Image.asset('assets/images/card.png'),
                 ),
               ),
+              Text("Top up your Card with Kes " + amount,
+                  style: GoogleFonts.lato(
+                      fontSize: 26, color: ColorConstants.kgreyColor)),
               LimitedBox(
                 child: FutureBuilder<http.Response>(
                   future: futurePayment,
@@ -60,9 +63,9 @@ class _PaymentProcessingPageState extends State<PaymentProcessingPage> {
                     }
                     // By default, show a loading spinner.
                     return Container(
-                      width: MediaQuery.of(context).size.width,
+                      width: MediaQuery.of(context).size.width/1.2,
                       height: MediaQuery.of(context).size.width / 2,
-                      child: Center(child: CircularProgressIndicator()),
+                      child: Center(child: LinearProgressIndicator()),
                     );
                     // return CircularProgressIndicator();
                   },

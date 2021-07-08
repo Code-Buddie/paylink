@@ -311,91 +311,12 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                   ],
                 ),
               ),
-              /*
-              Container(
-                padding: EdgeInsets.all(15.0),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      "Select Payment Method",
-                      style: GoogleFonts.spartan(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: ColorConstants.kblackColor,
-                      ),
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Container(
-                              margin: EdgeInsets.only(right: 5),
-                              child: ElevatedButton(
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: _flag
-                                        ? ColorConstants.kgreenColor
-                                        : ColorConstants.kgreyColor,
-                                  ),
-                                  onPressed: () =>
-                                      setState(() => _flag = !_flag),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      _flag ? Icon(Icons.check) : Container(),
-                                      Text(
-                                        "M-pesa",
-                                        style: GoogleFonts.spartan(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: ColorConstants.kwhiteColor,
-                                        ),
-                                      )
-                                    ],
-                                  ))),
-                        ),
-                        Expanded(
-                          child: Container(
-                              margin: EdgeInsets.only(left: 5),
-                              child: ElevatedButton(
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: _flag
-                                        ? ColorConstants.kgreyColor
-                                        : ColorConstants.kgreenColor,
-                                  ),
-                                  onPressed: () =>
-                                      setState(() => _flag = !_flag),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      _flag ? Container() : Icon(Icons.check),
-                                      Text(
-                                        "Bank Payment",
-                                        style: GoogleFonts.spartan(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: ColorConstants.kwhiteColor,
-                                        ),
-                                      )
-                                    ],
-                                  ))),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              */
               Padding(
                 padding: EdgeInsets.only(left: 15, right: 15, bottom: 10),
                 child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil('/complete', (Route<dynamic> route) => false);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/complete', (Route<dynamic> route) => false);
                     },
                     child: Column(
                       children: [
@@ -439,7 +360,9 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                                       ),
                                       LimitedBox(
                                         child: Text(
-                                          "Pay KES " + parkingInfo.amount +" using my current number",
+                                          "Pay KES " +
+                                              parkingInfo.amount +
+                                              " using my current number",
                                           style: GoogleFonts.spartan(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w700,
@@ -477,8 +400,8 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                 padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
                 child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context)
-                          .pushNamedAndRemoveUntil('/complete', (Route<dynamic> route) => false);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/complete', (Route<dynamic> route) => false);
                     },
                     child: Column(
                       children: [
@@ -514,7 +437,7 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                                   ),
                                   Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       SizedBox(
@@ -523,6 +446,89 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                                       LimitedBox(
                                         child: Text(
                                           "Pay using other number",
+                                          style: GoogleFonts.spartan(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
+                                            color: ColorConstants.kgreenColor,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.chevron_right,
+                                  color: ColorConstants.kgreenColor,
+                                ),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        )
+                      ],
+                    )),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                          '/process-cash');
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          // height: 80,
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: ColorConstants.kwhiteColor,
+                              border: Border.all(
+                                  color: ColorConstants.kgreenColor)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: ColorConstants.kwhiteColor,
+                                      borderRadius: BorderRadius.circular(18.0),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.credit_card,
+                                        color: ColorConstants.kgreenColor,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      LimitedBox(
+                                        child: Text(
+                                          "Pay Cash",
                                           style: GoogleFonts.spartan(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w700,

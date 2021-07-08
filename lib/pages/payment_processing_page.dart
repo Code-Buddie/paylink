@@ -78,7 +78,7 @@ class _PaymentProcessingPageState extends State<PaymentProcessingPage> {
 
   Future<http.Response> makePayment() async {
     final response = await http.post(
-      Uri.parse(ApiConstants.mpesaEmdpoint),
+      Uri.parse(ApiConstants.mpesaEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer FLWSECK-06573ecc063f2cb1ed69130ca8f1dbc1-X'

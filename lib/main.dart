@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:paylink_app/pages/auth/forgot_password_page.dart';
 import 'package:paylink_app/pages/auth/login_page.dart';
 import 'package:paylink_app/pages/auth/signup_page.dart';
+import 'package:paylink_app/pages/cash_processing_page.dart';
 import 'package:paylink_app/pages/index.dart';
 import 'package:paylink_app/pages/invioce_details_page.dart';
 import 'package:paylink_app/pages/make_payment_page.dart';
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
+      initialRoute: '/process-cash',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => IndexPage(),
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         '/failed': (context) => PaymentCompletePage(),
         '/top-up': (context) => TopUpWalletPage(),
         '/process': (context)=> PaymentProcessingPage(),
+        '/process-cash': (context)=> CashProcessingPage(),
       },
     );
   }

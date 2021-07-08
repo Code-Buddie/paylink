@@ -66,6 +66,8 @@ flutter:
     - assets/images/offline.png
     - assets/images/confirm.png
     - assets/images/card.png
+    - assets/images/payment.png
+    - assets/images/car.png
     - assets/maps/map_style.json
   #   - images/a_dot_ham.jpeg
 

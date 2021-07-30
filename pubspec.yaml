@@ -41,6 +41,9 @@ dependencies:
   google_maps_flutter: ^2.0.6
   location: ^4.3.0
   local_auth: ^1.1.6
+  camera:
+  path_provider:
+  path:
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +70,7 @@ flutter:
     - assets/images/confirm.png
     - assets/images/card.png
     - assets/images/payment.png
+    - assets/images/payments.jpg
     - assets/images/car.png
     - assets/maps/map_style.json
   #   - images/a_dot_ham.jpeg

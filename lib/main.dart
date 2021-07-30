@@ -15,7 +15,8 @@ import 'package:paylink_app/pages/select_payment_page.dart';
 import 'package:paylink_app/pages/splash_screen_page.dart';
 import 'package:paylink_app/pages/top_up_wallet_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/process-cash',
+      initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => IndexPage(),
@@ -47,10 +48,9 @@ class MyApp extends StatelessWidget {
         '/complete': (context) => PaymentCompletePage(),
         '/failed': (context) => PaymentCompletePage(),
         '/top-up': (context) => TopUpWalletPage(),
-        '/process': (context)=> PaymentProcessingPage(),
-        '/process-cash': (context)=> CashProcessingPage(),
+        '/process': (context) => PaymentProcessingPage(),
+        '/process-cash': (context) => CashProcessingPage(),
       },
     );
   }
 }
-

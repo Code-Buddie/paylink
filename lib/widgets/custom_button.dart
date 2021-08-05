@@ -15,15 +15,15 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 4.0.h),
+    return Container(
+      margin: EdgeInsets.only(top: 1.0.h),
       child: Material(
         color: color,
         borderRadius: BorderRadius.circular(10.0),
         child: MaterialButton(
-          padding: EdgeInsets.all(1.0.w),
+          // padding: EdgeInsets.all(1.0.w),
           onPressed: onPressed,
-          minWidth: 80.0.w,
+          minWidth: double.infinity,
           height: 6.0.h,
           child: FittedBox(
             fit: BoxFit.scaleDown,
@@ -32,8 +32,8 @@ class CustomButton extends StatelessWidget {
               style: TextStyle(
                   color: textColor,
                   fontSize: SizerUtil.deviceType == DeviceType.tablet
-                      ? 16.0.sp
-                      : 20.0.sp),
+                      ? 14.0.sp
+                      : 16.0.sp),
             ),
           ),
         ),

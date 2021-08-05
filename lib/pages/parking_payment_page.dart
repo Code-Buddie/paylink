@@ -1,8 +1,15 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
+import 'package:paylink_app/models/area.dart';
 import 'package:paylink_app/models/parking_info.dart';
+import 'package:paylink_app/shared/api_constants.dart';
 import 'package:paylink_app/shared/color_constants.dart';
 
 class ParkingPaymentPage extends StatefulWidget {
@@ -16,22 +23,13 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _carPlates = TextEditingController();
 
-  String _selectedArea = 'Nakuru West';
+  Future<List<Area>> futureAreas;
+
+  String _selectedArea = '';
   bool _busy = false;
 
-  var _currencies = [
-    "Gilgil",
-    "Kuresoi North",
-    "Kuresoi South",
-    "Molo",
-    "Naivasha",
-    "Nakuru East",
-    "Nakuru North",
-    "Nakuru West",
-    "Njoro",
-    "Rongai",
-    "Subukia",
-  ];
+  final storage = FlutterSecureStorage();
+
 
   GoogleMapController _controller;
   String _mapStyle;
@@ -51,6 +49,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
         .then((string) {
       this._mapStyle = string;
     });
+
+    futureAreas = fetchAreas();
   }
 
   @override
@@ -132,7 +132,8 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                     TextFormField(
                                       controller: _carPlates,
                                       keyboardType: TextInputType.name,
-                                      textCapitalization: TextCapitalization.characters,
+                                      textCapitalization:
+                                          TextCapitalization.characters,
                                       decoration: InputDecoration(
                                         labelText: 'Car Number Plates',
                                         border: new OutlineInputBorder(
@@ -152,43 +153,61 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                     SizedBox(
                                       height: 20,
                                     ),
-                                    FormField<String>(
-                                      builder: (FormFieldState<String> state) {
-                                        return InputDecorator(
-                                          decoration: InputDecoration(
-                                            labelText: 'Parking Zone',
-                                            errorStyle: TextStyle(
-                                                color: Colors.redAccent,
-                                                fontSize: 16.0),
-                                            hintText: 'Parking Zone',
-                                            border: new OutlineInputBorder(
-                                                borderSide: new BorderSide(
-                                                    color: ColorConstants
-                                                        .kgreenColor)),
-                                          ),
-                                          isEmpty: _selectedArea == '',
-                                          child: DropdownButtonHideUnderline(
-                                            child: DropdownButton<String>(
-                                              value: _selectedArea,
-                                              isDense: true,
-                                              onChanged: (String newValue) {
-                                                setState(() {
-                                                  _selectedArea = newValue;
-                                                  state.didChange(newValue);
-                                                });
-                                              },
-                                              items: _currencies
-                                                  .map((String value) {
-                                                return DropdownMenuItem<String>(
-                                                  value: value,
-                                                  child: Text(value),
+                                    FutureBuilder(
+                                        future: futureAreas,
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            print(snapshot.data.toString());
+                                            List<Area> _areas = snapshot.data ?? [Area('Nakuru')];
+                                            return FormField<String>(
+                                              builder: (FormFieldState<String>
+                                                  state) {
+                                                return InputDecorator(
+                                                  decoration: InputDecoration(
+                                                    labelText: 'Parking Zone',
+                                                    errorStyle: TextStyle(
+                                                        color: Colors.redAccent,
+                                                        fontSize: 16.0),
+                                                    hintText: 'Parking Zone',
+                                                    border: new OutlineInputBorder(
+                                                        borderSide: new BorderSide(
+                                                            color: ColorConstants
+                                                                .kgreenColor)),
+                                                  ),
+                                                  isEmpty: _selectedArea == '',
+                                                  child:
+                                                      DropdownButtonHideUnderline(
+                                                    child:
+                                                        DropdownButton<String>(
+                                                      value: _selectedArea,
+                                                      isDense: true,
+                                                      onChanged:
+                                                          (String newValue) {
+                                                        setState(() {
+                                                          _selectedArea =
+                                                              newValue;
+                                                          state.didChange(
+                                                              newValue);
+                                                        });
+                                                      },
+                                                      items: _areas
+                                                          .map((Area area) {
+                                                        return DropdownMenuItem<
+                                                            String>(
+                                                          value: area.name.isNotEmpty ? area.name : null,
+                                                          child:
+                                                              Text(area.name),
+                                                        );
+                                                      }).toList(),
+                                                    ),
+                                                  ),
                                                 );
-                                              }).toList(),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
+                                              },
+                                            );
+                                          }
+
+                                          return Container();
+                                        }),
                                     SizedBox(
                                       height: 20,
                                     ),
@@ -243,6 +262,22 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
             ],
           ),
         ));
+  }
+
+  Future<List<Area>> fetchAreas() async {
+    var jwt = await storage.read(key: "token");
+    final response = await http
+        .get(Uri.parse(ApiConstants.apiEndpoint + "payment/areas"), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $jwt',
+    });
+    if (response.statusCode == 200) {
+      var responseJson = json.decode(response.body);
+      print(responseJson);
+     return (responseJson as List).map((area) => Area.fromJson(area)).toList();
+
+    } else {
+      throw Exception('Unable to process payments');
+    }
   }
 
   void _preparePayment() async {

@@ -10,8 +10,8 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 4.0.h),
+    return Container(
+      margin: EdgeInsets.only(top: 1.0.h),
       child: TextField(
         obscureText: isObscured,
         cursorColor: Colors.black,

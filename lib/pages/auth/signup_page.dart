@@ -235,31 +235,23 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<http.Response> createUser() async {
     final response = await http.post(
-      Uri.parse(ApiConstants.apiEndpoint+"auth/signup"),
+      Uri.parse(ApiConstants.apiEndpoint + "auth/signup"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, dynamic>{
         "name": _nameController.text,
         "phone": _phoneController.text,
-        "idNumber": _idController.text,
+        "username": _idController.text,
         "roles": ["user"],
         "email": _emailController.text,
         "password": _passwordController.text
       }),
     );
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      // await Hive.openBox<User>(userBoxName)
-      //     .then((value) => userBox.add(User(
-      //         id: _idController.text,
-      //         name: _nameController.text,
-      //         email: _emailController.text)));
-
-      // Navigator.of(context).pop();
-      Navigator.of(context).pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
-      // Navigator.pushNamed(context, "/login");
-      // return jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
     } else {
       setState(() {
         _busy = false;

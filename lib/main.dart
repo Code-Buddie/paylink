@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:paylink_app/pages/auth/forgot_password_page.dart';
 import 'package:paylink_app/pages/auth/login_page.dart';
@@ -17,6 +18,7 @@ import 'package:paylink_app/pages/top_up_wallet_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
+      initialRoute: '/start',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => IndexPage(),

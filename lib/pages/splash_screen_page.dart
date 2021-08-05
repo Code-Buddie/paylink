@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'package:paylink_app/shared/api_constants.dart';
 import 'package:paylink_app/shared/color_constants.dart';
 
 class SplashScreenPage extends StatefulWidget {
@@ -19,10 +19,11 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   Timer _timer;
   int _loaderDuration = 5;
 
+  final storage = FlutterSecureStorage();
+
   @override
   void initState() {
     super.initState();
-    fetchData();
   }
 
   @override
@@ -49,22 +50,6 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                 SizedBox(
                   height: 20,
                 ),
-                /*Text(
-                  "Nakuru County Government",
-                  style: GoogleFonts.spartan(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: ColorConstants.kgreenColor,
-                  ),
-                ),
-                Text(
-                  "Home of unlimited opportunities",
-                  style: GoogleFonts.spartan(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: ColorConstants.kgreyColor,
-                  ),
-                ),*/
               ],
             ),
           )),
@@ -73,61 +58,64 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 margin: EdgeInsets.all(30),
-                child: LinearProgressIndicator(),
+                child: FutureBuilder(
+                    future: jwtOrEmpty,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return LinearProgressIndicator();
+                      if (snapshot.data != "") {
+                        var str = snapshot.data;
+                        var jwt = str.split(".");
+                        if (jwt.length != 3) {
+                          return Container();
+                        } else {
+                          var payload = json.decode(ascii
+                              .decode(base64.decode(base64.normalize(jwt[1]))));
+                          if (DateTime.fromMillisecondsSinceEpoch(
+                                  payload["exp"] * 1000)
+                              .isAfter(DateTime.now())) {
+                            return Container();
+                          } else {
+                            return Container();
+                          }
+                        }
+                      } else {
+                        return Container();
+                      }
+                    }),
               ))
         ],
       ),
     );
   }
 
+  Future<String> get jwtOrEmpty async {
+    var jwt = await storage.read(key: "token");
+    if (jwt == null) {
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+      return "";
+    } else {
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    }
+
+    return jwt;
+  }
+
   Future<void> fetchData() async {
     try {
       final result = await InternetAddress.lookup("twitter.com");
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-          await startTimer();
-        } else {
         await startTimer();
-          // _showAlert();
-        }
+      } else {
+        await startTimer();
+        // _showAlert();
+      }
     } on SocketException catch (_) {
       // _showAlert();
       await startTimer();
     }
   }
-
-  /*
-  List<License> _getLicensesFromResponse(http.Response response) {
-    if (response.statusCode == 200) {
-      var responseJson = json.decode(response.body);
-      return (responseJson as List)
-          .map((license) => License.fromJson(license))
-          .toList();
-    } else {
-      throw Exception('Unable to load your licenses from database');
-    }
-  }
-
-  List<License> _fetchInvoiceFromResponse(http.Response response) {
-    if (response.statusCode == 200) {
-      var responseJson = json.decode(response.body);
-      return (responseJson as List)
-          .map((license) => License.fromJson(license))
-          .toList();
-    } else {
-      throw Exception('Unable to load your recent payments');
-    }
-  }
-
-  List<License> _fetchPaymentFromResponse(http.Response response) {
-    if (response.statusCode == 200) {
-      var responseJson = json.decode(response.body);
-      return (responseJson as List)
-          .map((license) => License.fromJson(license))
-          .toList();
-    } else {
-      throw Exception('Unable to load your recent payments');
-    }
-  } */
 
   Future<void> startTimer() async {
     const oneSec = const Duration(seconds: 1);

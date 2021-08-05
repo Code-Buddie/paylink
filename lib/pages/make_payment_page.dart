@@ -1,4 +1,5 @@
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paylink_app/models/parking_info.dart';
@@ -400,8 +401,24 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                 padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
                 child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/complete', (Route<dynamic> route) => false);
+                      // Save to firebase for test
+                      DateTime now = new DateTime.now();
+                      DateTime date =
+                          new DateTime(now.year, now.month, now.day);
+                      String currentDate = date.toString().split(" ")[0];
+                      FirebaseFirestore.instance
+                          .collection('payments')
+                          .doc('KBX 242Q')
+                          .collection(currentDate)
+                          .add({
+                            'amount': 300,
+                            'area': "Nakuru",
+                          })
+                          .then((value) => Navigator.of(context)
+                              .pushNamedAndRemoveUntil(
+                                  '/complete', (Route<dynamic> route) => false))
+                          .catchError((error) =>
+                              print("Failed to add payment: $error"));
                     },
                     child: Column(
                       children: [
@@ -483,8 +500,7 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                 padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
                 child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed(
-                          '/process-cash');
+                      Navigator.of(context).pushNamed('/process-cash');
                     },
                     child: Column(
                       children: [

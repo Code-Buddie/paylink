@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:paylink_app/shared/api_constants.dart';
 import 'package:paylink_app/shared/color_constants.dart';
@@ -14,6 +15,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final storage = FlutterSecureStorage();
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
@@ -134,6 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                           setState(() {
                             _busy = true;
                           });
+                          FocusScope.of(context).unfocus();
                           loginUser();
                         }
                       },
@@ -189,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
     final response = await http.post(
       Uri.parse(ApiConstants.apiEndpoint + "auth/signin"),
       headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+        'Content-Type': 'application/json',
       },
       body: jsonEncode(<String, dynamic>{
         "username": _emailController.text,
@@ -197,19 +201,45 @@ class _LoginPageState extends State<LoginPage> {
       }),
     );
 
-    if (response.statusCode == 201 ||
-        response.statusCode == 200 ||
-        response.statusCode == 401) {
-      // Navigator.pushNamed(context, "/");
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-      // return jsonDecode(response.body);
+    print(response.body);
+    print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _busy = false;
+      });
+      var resp = response.body;
+      if (resp != null) {
+        Map<String, dynamic> user = jsonDecode(resp);
+        storage.write(key: "token", value: user['accessToken']);
+        storage.write(key: "user", value: user['username']);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(prepareSnackBar("Invalid credentials"));
+      }
     } else {
       setState(() {
         _busy = false;
       });
+      ScaffoldMessenger.of(context)
+          .showSnackBar(prepareSnackBar("Unable to log you in"));
       return Future.error("Failed to login user",
           StackTrace.fromString("Invalid Response from Server"));
     }
+  }
+
+  SnackBar prepareSnackBar(String mess) {
+    return SnackBar(
+      content: Text(
+        mess,
+        style: TextStyle(
+          color: ColorConstants.kRedColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      ),
+    );
   }
 }

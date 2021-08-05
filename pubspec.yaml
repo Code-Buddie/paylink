@@ -36,7 +36,6 @@ dependencies:
   intl: ^0.17.0
   sqflite: ^2.0.0+3
   geolocator: ^7.2.0+1
-  shared_preferences: ^2.0.6
   barcode_widget: ^2.0.1
   google_maps_flutter: ^2.0.6
   location: ^4.3.0
@@ -44,6 +43,9 @@ dependencies:
   camera:
   path_provider:
   path:
+  firebase_core: ^1.4.0
+  cloud_firestore: ^2.4.0
+  flutter_secure_storage: ^4.2.1
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -14,8 +15,6 @@ class CashProcessingPage extends StatefulWidget {
 }
 
 class _CashProcessingPageState extends State<CashProcessingPage> {
-  Future<http.Response> futurePayment;
-
   @override
   void initState() {
     super.initState();
@@ -23,7 +22,9 @@ class _CashProcessingPageState extends State<CashProcessingPage> {
 
   @override
   Widget build(BuildContext context) {
-    futurePayment = makePayment();
+    DateTime now = new DateTime.now();
+    DateTime date = new DateTime(now.year, now.month, now.day);
+    String currentDate = date.toString().split(" ")[0];
     return Scaffold(
         backgroundColor: ColorConstants.kwhiteColor,
         body: Container(
@@ -73,12 +74,6 @@ class _CashProcessingPageState extends State<CashProcessingPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        // Center(
-                        //   child: Container(
-                        //     width: MediaQuery.of(context).size.width / 1.5,
-                        //     child: Image.asset('assets/images/payment.png'),
-                        //   ),
-                        // ),
                         Text("Cash Payment",
                             style: GoogleFonts.lato(
                                 fontSize: 22,
@@ -137,7 +132,7 @@ class _CashProcessingPageState extends State<CashProcessingPage> {
                                 style: GoogleFonts.lato(
                                     fontSize: 18,
                                     color: ColorConstants.kgreyColor)),
-                            Text("21/7/2021",
+                            Text(currentDate,
                                 style: GoogleFonts.lato(
                                     fontSize: 18,
                                     color: ColorConstants.kgreyColor)),
@@ -145,157 +140,132 @@ class _CashProcessingPageState extends State<CashProcessingPage> {
                         ),
                         Divider(),
                         Divider(),
-                        Text(
-                            "Please wait as the parking attendant processes your payment",
-                            style: GoogleFonts.lato(
-                                fontSize: 18,
-                                color: ColorConstants.kgreyColor)),
                         LimitedBox(
-                          child: FutureBuilder<http.Response>(
-                            future: futurePayment,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return Container(
-                                  padding: EdgeInsets.only(top: 15, bottom: 15),
-                                  width:
-                                      MediaQuery.of(context).size.width / 1.2,
-                                  child:
-                                      Center(child: LinearProgressIndicator()),
-                                );
-                                // return Padding(
-                                //   padding: EdgeInsets.only(
-                                //       left: 15, right: 15, bottom: 15),
-                                //   child: SizedBox(
-                                //     width: double.infinity,
-                                //     child: ElevatedButton(
-                                //         onPressed: () {
-                                //           Navigator.of(context)
-                                //               .pushNamedAndRemoveUntil('/',
-                                //                   (Route<dynamic> route) => false);
-                                //         },
-                                //         style: TextButton.styleFrom(
-                                //             backgroundColor:
-                                //                 ColorConstants.kgreenColor),
-                                //         child: Text(
-                                //           "Complete Payment",
-                                //           style: GoogleFonts.spartan(
-                                //             fontSize: 12,
-                                //             fontWeight: FontWeight.w700,
-                                //             color: ColorConstants.kwhiteColor,
-                                //           ),
-                                //         )),
-                                //   ),
-                                // );
-                              } else if (snapshot.hasError) {
-                                Text(
-                                    "Sorry, we are unable to process your transaction",
-                                    style: GoogleFonts.lato(
-                                        fontSize: 18,
-                                        color: ColorConstants.kRedColor));
-                                return new Container(
-                                  child: LinearProgressIndicator(),
-                                );
-                                // return new CustomErrorWidget();
-                              }
-                              // By default, show a loading spinner.
-                              return Container(
-                                padding: EdgeInsets.only(top: 15, bottom: 15),
-                                width: MediaQuery.of(context).size.width / 1.2,
-                                child: Center(child: LinearProgressIndicator()),
-                              );
-                              // return CircularProgressIndicator();
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('payments')
+                                .doc('KBX 242Q')
+                                .collection(currentDate)
+                                .snapshots(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (!snapshot.hasData)
+                                return paymentProcessingWidgets();
+                              if (snapshot.hasError)
+                                return paymentFailedWidgets();
+                              if (snapshot.hasData)
+                                return paymentCompleteWidgets();
+                              return paymentProcessingWidgets();
                             },
                           ),
                         ),
                       ],
                     )),
-                SizedBox(
-                  height: 30,
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    final cameras = await availableCameras();
-                    final firstCamera = cameras.first;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              TakePictureScreen(camera: firstCamera)),
-                    );
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(top: 20),
-                    // padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: ColorConstants.kwhiteColor,
-                        border: Border.all(color: ColorConstants.kgreenColor)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        LimitedBox(
-                          child: Text(
-                            "Receipt Photo",
-                            style: GoogleFonts.spartan(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: ColorConstants.kgreenColor,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.camera,
-                            color: ColorConstants.kgreenColor,
-                          ),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/', (Route<dynamic> route) => false);
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(top: 20),
-                    width: double.infinity,
-                    // height: 50,
-                    padding: EdgeInsets.all(18),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: ColorConstants.kgreenColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      "Complete Payment",
-                      style: GoogleFonts.spartan(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: ColorConstants.kwhiteColor,
-                      ),
-                    ),
-                  ),
-                ),
               ],
             )));
   }
 
-  Future<http.Response> makePayment() async {
-    final response = await http.get(
-      Uri.parse(ApiConstants.jsonEndpoint),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    ).timeout(const Duration(seconds: 120));
+  Widget paymentProcessingWidgets() {
+    return new Column(
+      children: [
+        Text("Please wait as the parking attendant processes your payment",
+            style: GoogleFonts.lato(
+                fontSize: 18, color: ColorConstants.kgreyColor)),
+        Container(
+          padding: EdgeInsets.only(top: 15, bottom: 15),
+          width: MediaQuery.of(context).size.width / 1.2,
+          child: Center(child: LinearProgressIndicator()),
+        )
+      ],
+    );
+  }
 
-    print(response.body.toString());
+  Widget paymentCompleteWidgets() {
+    return new Column(
+      children: [
+        SizedBox(
+          height: 30,
+        ),
+        GestureDetector(
+          onTap: () async {
+            final cameras = await availableCameras();
+            final firstCamera = cameras.first;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => TakePictureScreen(camera: firstCamera)),
+            );
+          },
+          child: Container(
+            margin: EdgeInsets.only(top: 20),
+            // padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: ColorConstants.kwhiteColor,
+                border: Border.all(color: ColorConstants.kgreenColor)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                LimitedBox(
+                  child: Text(
+                    "Receipt Photo",
+                    style: GoogleFonts.spartan(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: ColorConstants.kgreenColor,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.camera,
+                    color: ColorConstants.kgreenColor,
+                  ),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+          },
+          child: Container(
+            margin: EdgeInsets.only(top: 20),
+            width: double.infinity,
+            // height: 50,
+            padding: EdgeInsets.all(18),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: ColorConstants.kgreenColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              "Complete Payment",
+              style: GoogleFonts.spartan(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: ColorConstants.kwhiteColor,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-    return response;
+  Widget paymentFailedWidgets() {
+    return new Column(
+      children: [
+        Text("Sorry, we are unable to process your transaction",
+            style:
+                GoogleFonts.lato(fontSize: 18, color: ColorConstants.kRedColor))
+      ],
+    );
   }
 }

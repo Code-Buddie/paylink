@@ -124,7 +124,7 @@ class _WalletPageState extends State<WalletPage> {
                             ),
                           );
                         } else if (snapshot.hasError) {
-                          return Text("${snapshot.error.toString()} yes yes");
+                          return Text("Unable to load your wallet Transactions");
                         }
                         return Container(
                             // child: LinearProgressIndicator(),
@@ -153,7 +153,7 @@ class _WalletPageState extends State<WalletPage> {
                         SizedBox(
                             width: double.infinity,
                             child: Text(
-                              "Kes 150000",
+                              "Kes 1500",
                               style: GoogleFonts.spartan(
                                 fontSize: 18,
                                 color: ColorConstants.kblackColor,

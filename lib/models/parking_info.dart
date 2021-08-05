@@ -9,4 +9,8 @@ class ParkingInfo{
   String toString() {
     return 'carPlates: $carPlates, amount: $amount, area: $area';
   }
+
+  factory ParkingInfo.fromJson(Map<String, dynamic> json) {
+    return ParkingInfo(json['carPlates'],'200',json['area']  );
+  }
 }

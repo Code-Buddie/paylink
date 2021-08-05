@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:paylink_app/models/license.dart';
+import 'package:paylink_app/models/parking_info.dart';
 import 'package:paylink_app/shared/api_constants.dart';
 import 'package:paylink_app/shared/color_constants.dart';
 import 'package:paylink_app/widgets/transaction_list_widget.dart';
@@ -16,12 +18,14 @@ class PaymentHistoryPage extends StatefulWidget {
 }
 
 class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
-  Future<List<License>> futureLicense;
+  Future<List<ParkingInfo>> futureParkingInfo;
+
+  final storage = FlutterSecureStorage();
 
   @override
   void initState() {
     super.initState();
-    futureLicense = fetchLicense();
+    futureParkingInfo = fetchLicense();
   }
 
   @override
@@ -69,25 +73,32 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                     Container(
                         width: double.infinity,
                         // height: double.infinity,
-                        child: FutureBuilder<List<License>>(
-                          future: futureLicense,
+                        child: FutureBuilder<List<ParkingInfo>>(
+                          future: futureParkingInfo,
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              List<License> licenses = snapshot.data ?? [];
-                              return ListView.builder(
-                                  itemCount: licenses.length,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  padding: EdgeInsets.all(0),
-                                  itemBuilder: (context, index) {
-                                    License license = licenses[index];
-                                    return new TransactionListWidget(
-                                        description: license.name,
-                                        paidOn: "Parking fees",
-                                        amount: 5000);
-                                  });
+                              List<ParkingInfo> payments = snapshot.data ?? [];
+                              if (payments.isEmpty) {
+                                return Text(
+                                    "You haven't made any payments yet");
+                              } else {
+                                return ListView.builder(
+                                    itemCount: payments.length,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    padding: EdgeInsets.all(0),
+                                    itemBuilder: (context, index) {
+                                      ParkingInfo payment = payments[index];
+                                      return new TransactionListWidget(
+                                          description: payment.carPlates,
+                                          paidOn: payment.area,
+                                          amount: 200);
+                                    });
+                              }
                             } else if (snapshot.hasError) {
-                              return Text("${snapshot.error}");
+                              return Text(
+                                  "Unable to fetch your payment history!");
                             }
                             // By default, show a loading spinner.
                             return Center(
@@ -127,13 +138,17 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
     );
   }
 
-  Future<List<License>> fetchLicense() async {
-    final response =
-        await http.get(Uri.parse(ApiConstants.apiEndpoint + "license/test"));
+  Future<List<ParkingInfo>> fetchLicense() async {
+    var jwt = await storage.read(key: "token");
+    final response = await http.get(
+        Uri.parse(ApiConstants.apiEndpoint + "payments/history"),
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer $jwt',
+        });
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
       return (responseJson as List)
-          .map((license) => License.fromJson(license))
+          .map((parkingInfo) => ParkingInfo.fromJson(parkingInfo))
           .toList();
     } else {
       throw Exception('Unable to load your recent payments');

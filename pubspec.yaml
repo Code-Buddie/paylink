@@ -46,6 +46,8 @@ dependencies:
   firebase_core: ^1.4.0
   cloud_firestore: ^2.4.0
   flutter_secure_storage: ^4.2.1
+  image_picker:
+  sizer:
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +76,7 @@ flutter:
     - assets/images/payment.png
     - assets/images/payments.jpg
     - assets/images/car.png
+    - assets/images/ic_change_picture.png
     - assets/maps/map_style.json
   #   - images/a_dot_ham.jpeg
 

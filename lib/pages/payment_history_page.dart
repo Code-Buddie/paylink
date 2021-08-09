@@ -79,26 +79,20 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                             if (snapshot.hasData) {
                               List<ParkingInfo> payments = snapshot.data ?? [];
                               if (payments.isEmpty) {
-                                return Text(
-                                    "You haven't made any payments yet");
+                                return Text("You haven't made any payments yet");
                               } else {
                                 return ListView.builder(
                                     itemCount: payments.length,
                                     shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
+                                    physics: const NeverScrollableScrollPhysics(),
                                     padding: EdgeInsets.all(0),
                                     itemBuilder: (context, index) {
                                       ParkingInfo payment = payments[index];
-                                      return new TransactionListWidget(
-                                          description: payment.carPlates,
-                                          paidOn: payment.area,
-                                          amount: 200);
+                                      return new TransactionListWidget(description: payment.carPlates, paidOn: payment.area, area: payment.area, amount: 200);
                                     });
                               }
                             } else if (snapshot.hasError) {
-                              return Text(
-                                  "Unable to fetch your payment history!");
+                              return Text("Unable to fetch your payment history!");
                             }
                             // By default, show a loading spinner.
                             return Center(
@@ -140,16 +134,14 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
   Future<List<ParkingInfo>> fetchLicense() async {
     var jwt = await storage.read(key: "token");
-    final response = await http.get(
-        Uri.parse(ApiConstants.apiEndpoint + "payments/history"),
-        headers: {
-          HttpHeaders.authorizationHeader: 'Bearer $jwt',
-        });
+    final response = await http.get(Uri.parse(ApiConstants.apiEndpoint + "payment/history"), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $jwt',
+    });
     if (response.statusCode == 200) {
+      storage.write(key: 'token', value: response.headers['token']);
       var responseJson = json.decode(response.body);
-      return (responseJson as List)
-          .map((parkingInfo) => ParkingInfo.fromJson(parkingInfo))
-          .toList();
+      print(responseJson);
+      return (responseJson as List).map((parkingInfo) => ParkingInfo.fromJson(parkingInfo)).toList();
     } else {
       throw Exception('Unable to load your recent payments');
     }

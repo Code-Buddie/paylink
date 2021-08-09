@@ -16,9 +16,6 @@ class SplashScreenPage extends StatefulWidget {
 }
 
 class _SplashScreenPageState extends State<SplashScreenPage> {
-  Timer _timer;
-  int _loaderDuration = 5;
-
   final storage = FlutterSecureStorage();
 
   @override
@@ -29,7 +26,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorConstants.kwhiteColor,
+      backgroundColor: ColorConstants.kgreenColor,
       body: Column(
         children: [
           Expanded(
@@ -61,18 +58,18 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
                 child: FutureBuilder(
                     future: jwtOrEmpty,
                     builder: (context, snapshot) {
-                      if (!snapshot.hasData) return LinearProgressIndicator();
+                      if (!snapshot.hasData)
+                        return LinearProgressIndicator(
+                          color: ColorConstants.kwhiteColor,
+                        );
                       if (snapshot.data != "") {
                         var str = snapshot.data;
                         var jwt = str.split(".");
                         if (jwt.length != 3) {
                           return Container();
                         } else {
-                          var payload = json.decode(ascii
-                              .decode(base64.decode(base64.normalize(jwt[1]))));
-                          if (DateTime.fromMillisecondsSinceEpoch(
-                                  payload["exp"] * 1000)
-                              .isAfter(DateTime.now())) {
+                          var payload = json.decode(ascii.decode(base64.decode(base64.normalize(jwt[1]))));
+                          if (DateTime.fromMillisecondsSinceEpoch(payload["exp"] * 1000).isAfter(DateTime.now())) {
                             return Container();
                           } else {
                             return Container();
@@ -89,48 +86,37 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   }
 
   Future<String> get jwtOrEmpty async {
+    await Future.delayed(Duration(seconds: 5));
     var jwt = await storage.read(key: "token");
-    if (jwt == null) {
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
-      return "";
-    } else {
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-    }
+    fetchData().then((isConnected) {
+      if (isConnected) {
+        if (jwt == null) {
+          Navigator.of(context).pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+          return "";
+        } else {
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+        }
+      } else {
+        _showErrorAlert();
+      }
+    });
 
     return jwt;
   }
 
-  Future<void> fetchData() async {
+  Future<bool> fetchData() async {
     try {
       final result = await InternetAddress.lookup("twitter.com");
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        await startTimer();
+        return true;
       } else {
-        await startTimer();
-        // _showAlert();
+        return false;
       }
     } on SocketException catch (_) {
-      // _showAlert();
-      await startTimer();
+      return false;
     }
-  }
 
-  Future<void> startTimer() async {
-    const oneSec = const Duration(seconds: 1);
-    _timer = new Timer.periodic(
-      oneSec,
-      (Timer timer) {
-        if (_loaderDuration == 0) {
-          timer.cancel();
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              '/login', (Route<dynamic> route) => false);
-        } else {
-          _loaderDuration--;
-        }
-      },
-    );
+    return false;
   }
 
   void _showErrorAlert() async {
@@ -140,8 +126,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
         barrierDismissible: true,
         builder: (context) => AlertDialog(
               title: Text("No internet"),
-              content:
-                  Text("Are you offline? \nWe are unable to load your data"),
+              content: Text("Are you offline? \nWe are unable to load your data"),
               actions: [
                 TextButton(
                     style: TextButton.styleFrom(
@@ -178,16 +163,11 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   }
 
   static Future<void> pop({bool animated}) async {
-    await SystemChannels.platform
-        .invokeMethod<void>('SystemNavigator.pop', animated);
+    await SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop', animated);
   }
 
   @override
   void dispose() {
-    if (_timer != null) {
-      _timer.cancel();
-    }
-
     super.dispose();
   }
 }

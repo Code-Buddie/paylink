@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:paylink_app/models/service.dart';
@@ -20,6 +22,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Future<List<Service>> futureServices;
+
+  final storage = FlutterSecureStorage();
 
   @override
   void initState() {
@@ -182,13 +186,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<List<Service>> fetchServices() async {
-    final response =
-        await http.get(Uri.parse(ApiConstants.apiEndpoint + "services/test"));
+    var jwt = await storage.read(key: "token");
+    final response = await http.get(Uri.parse(ApiConstants.apiEndpoint + "services/all"), headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $jwt',
+    });
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
-      return (responseJson as List)
-          .map((license) => Service.fromJson(license))
-          .toList();
+      print(responseJson.body.toString());
+
+      return (responseJson as List).map((license) => Service.fromJson(license)).toList();
     } else {
       throw Exception('Unable to load your recent payments');
     }
@@ -201,8 +207,7 @@ class _HomePageState extends State<HomePage> {
         barrierDismissible: true,
         builder: (context) => AlertDialog(
               title: Text("No internet"),
-              content:
-                  Text("Are you offline? \nWe are unable to load your data"),
+              content: Text("Are you offline? \nWe are unable to load your data"),
               actions: [
                 TextButton(
                     style: TextButton.styleFrom(

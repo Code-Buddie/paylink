@@ -45,8 +45,7 @@ class CardWidget extends StatelessWidget {
                   tooltip: 'KYC',
                 ),
                 Container(
-                  padding:
-                      EdgeInsets.only(left: 15, top: 25, bottom: 10, right: 20),
+                  padding: EdgeInsets.only(left: 15, top: 25, bottom: 10, right: 20),
                   child: Text(
                     'NKR',
                     style: GoogleFonts.spartan(
@@ -110,9 +109,7 @@ class CardWidget extends StatelessWidget {
                               child: FutureBuilder(
                                 future: readCardName(),
                                 builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.none &&
-                                      snapshot.hasData == null) {
+                                  if (snapshot.connectionState == ConnectionState.none && snapshot.hasData == null) {
                                     return Container();
                                   }
                                   if (snapshot.hasData) {
@@ -216,6 +213,11 @@ class CardWidget extends StatelessWidget {
   }
 
   Future<String> readCardName() async {
+    return await storage.read(key: "user");
+  }
+
+  Future<String> readCardNumber() async {
+    String al = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-%&";
     return await storage.read(key: "user");
   }
 }

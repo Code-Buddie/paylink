@@ -3,12 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:paylink_app/shared/color_constants.dart';
 
 class InvoiceItemWidget extends StatelessWidget {
-  final String title, description;
+  final String title, description, paidAt;
 
   InvoiceItemWidget({
     Key key,
     @required this.title,
     @required this.description,
+    @required this.paidAt,
   }) : super(key: key);
 
   @override
@@ -21,12 +22,9 @@ class InvoiceItemWidget extends StatelessWidget {
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title),
-              Text(description)
-            ],
+            children: [Text(title), Text(paidAt)],
           ),
-          Text("Kes 200000"),
+          Text('Kes $description'),
         ],
       ),
     );

@@ -418,7 +418,7 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                               .pushNamedAndRemoveUntil(
                                   '/complete', (Route<dynamic> route) => false))
                           .catchError((error) =>
-                              print("Failed to add payment: $error"));
+                              print("Failed to make payment: $error"));
                     },
                     child: Column(
                       children: [

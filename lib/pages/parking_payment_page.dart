@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'package:paylink_app/models/area.dart';
 import 'package:paylink_app/models/parking_info.dart';
 import 'package:paylink_app/shared/api_constants.dart';
 import 'package:paylink_app/shared/color_constants.dart';
@@ -23,13 +22,12 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _carPlates = TextEditingController();
 
-  Future<List<Area>> futureAreas;
+  Future<List<String>> futureAreas;
 
-  String _selectedArea = '';
+  String _selectedArea = 'Nakuru Town';
   bool _busy = false;
 
   final storage = FlutterSecureStorage();
-
 
   GoogleMapController _controller;
   String _mapStyle;
@@ -44,9 +42,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
   @override
   void initState() {
     super.initState();
-    DefaultAssetBundle.of(context)
-        .loadString('assets/maps/map_style.json')
-        .then((string) {
+    DefaultAssetBundle.of(context).loadString('assets/maps/map_style.json').then((string) {
       this._mapStyle = string;
     });
 
@@ -98,9 +94,7 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Container(
-                                      height:
-                                          MediaQuery.of(context).size.height /
-                                              2.5,
+                                      height: MediaQuery.of(context).size.height / 2.5,
                                       margin: EdgeInsets.only(bottom: 10),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
@@ -110,19 +104,13 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                         mapType: MapType.normal,
                                         initialCameraPosition: _kNakuru,
                                         myLocationEnabled: true,
-                                        onMapCreated:
-                                            (GoogleMapController controller) {
-                                          controller
-                                              .setMapStyle(this._mapStyle);
+                                        onMapCreated: (GoogleMapController controller) {
+                                          controller.setMapStyle(this._mapStyle);
                                           _controller = controller;
-                                          _location.onLocationChanged
-                                              .listen((l) {
+                                          _location.onLocationChanged.listen((l) {
                                             _controller.animateCamera(
                                               CameraUpdate.newCameraPosition(
-                                                CameraPosition(
-                                                    target: LatLng(l.latitude,
-                                                        l.longitude),
-                                                    zoom: 15),
+                                                CameraPosition(target: LatLng(l.latitude, l.longitude), zoom: 15),
                                               ),
                                             );
                                           });
@@ -132,19 +120,13 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                     TextFormField(
                                       controller: _carPlates,
                                       keyboardType: TextInputType.name,
-                                      textCapitalization:
-                                          TextCapitalization.characters,
+                                      textCapitalization: TextCapitalization.characters,
                                       decoration: InputDecoration(
                                         labelText: 'Car Number Plates',
-                                        border: new OutlineInputBorder(
-                                            borderSide: new BorderSide(
-                                                color: ColorConstants
-                                                    .kgreenColor)),
+                                        border: new OutlineInputBorder(borderSide: new BorderSide(color: ColorConstants.kgreenColor)),
                                       ),
                                       validator: (name) {
-                                        if (name == null ||
-                                            name.isEmpty ||
-                                            !name.contains(" ")) {
+                                        if (name == null || name.isEmpty || !name.contains(" ")) {
                                           return 'Please enter a valid number plate';
                                         }
                                         return null;
@@ -155,48 +137,33 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                     ),
                                     FutureBuilder(
                                         future: futureAreas,
-                                        builder: (context, snapshot) {
+                                        builder: (context, AsyncSnapshot<List<String>> snapshot) {
                                           if (snapshot.hasData) {
-                                            print(snapshot.data.toString());
-                                            List<Area> _areas = snapshot.data ?? [Area('Nakuru')];
+                                            print(snapshot.data);
                                             return FormField<String>(
-                                              builder: (FormFieldState<String>
-                                                  state) {
+                                              builder: (FormFieldState<String> state) {
                                                 return InputDecorator(
                                                   decoration: InputDecoration(
                                                     labelText: 'Parking Zone',
-                                                    errorStyle: TextStyle(
-                                                        color: Colors.redAccent,
-                                                        fontSize: 16.0),
+                                                    errorStyle: TextStyle(color: Colors.redAccent, fontSize: 16.0),
                                                     hintText: 'Parking Zone',
-                                                    border: new OutlineInputBorder(
-                                                        borderSide: new BorderSide(
-                                                            color: ColorConstants
-                                                                .kgreenColor)),
+                                                    border: new OutlineInputBorder(borderSide: new BorderSide(color: ColorConstants.kgreenColor)),
                                                   ),
                                                   isEmpty: _selectedArea == '',
-                                                  child:
-                                                      DropdownButtonHideUnderline(
-                                                    child:
-                                                        DropdownButton<String>(
+                                                  child: DropdownButtonHideUnderline(
+                                                    child: DropdownButton<String>(
                                                       value: _selectedArea,
                                                       isDense: true,
-                                                      onChanged:
-                                                          (String newValue) {
+                                                      onChanged: (String newValue) {
                                                         setState(() {
-                                                          _selectedArea =
-                                                              newValue;
-                                                          state.didChange(
-                                                              newValue);
+                                                          _selectedArea = newValue;
+                                                          state.didChange(newValue);
                                                         });
                                                       },
-                                                      items: _areas
-                                                          .map((Area area) {
-                                                        return DropdownMenuItem<
-                                                            String>(
-                                                          value: area.name.isNotEmpty ? area.name : null,
-                                                          child:
-                                                              Text(area.name),
+                                                      items: snapshot.data.map((String value) {
+                                                        return DropdownMenuItem<String>(
+                                                          value: value,
+                                                          child: Text(value),
                                                         );
                                                       }).toList(),
                                                     ),
@@ -205,49 +172,59 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
                                               },
                                             );
                                           }
-
+                                          if (snapshot.hasError) {
+                                            print(snapshot.stackTrace);
+                                            return Container(
+                                              child: Center(
+                                                child: Text("Sorry, we are unable to process payments at the moment!"),
+                                              ),
+                                            );
+                                          }
                                           return Container();
                                         }),
                                     SizedBox(
                                       height: 20,
                                     ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        if (_formKey.currentState.validate()) {
-                                          if (_selectedArea != "" ||
-                                              _selectedArea != null) {
-                                            setState(() {
-                                              _busy = true;
-                                            });
-                                            _preparePayment();
-                                          }
-                                        }
-                                      },
-                                      child: Container(
-                                        width: double.infinity,
-                                        height: 50,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                          color: ColorConstants.kgreenColor,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: _busy
-                                            ? CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation(
-                                                        Colors.white),
-                                              )
-                                            : Text(
-                                                "Proceed",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
+                                    FutureBuilder(
+                                        future: futureAreas,
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                if (_formKey.currentState.validate()) {
+                                                  if (_selectedArea != "" || _selectedArea != null) {
+                                                    setState(() {
+                                                      _busy = true;
+                                                    });
+                                                    _preparePayment();
+                                                  }
+                                                }
+                                              },
+                                              child: Container(
+                                                width: double.infinity,
+                                                height: 50,
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                  color: ColorConstants.kgreenColor,
+                                                  borderRadius: BorderRadius.circular(8),
                                                 ),
+                                                child: _busy
+                                                    ? CircularProgressIndicator(
+                                                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                                                      )
+                                                    : Text(
+                                                        "Proceed",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
                                               ),
-                                      ),
-                                    ),
+                                            );
+                                          }
+                                          return Container();
+                                        }),
                                     SizedBox(
                                       height: 20,
                                     ),
@@ -264,23 +241,29 @@ class _ParkingPaymentPageState extends State<ParkingPaymentPage> {
         ));
   }
 
-  Future<List<Area>> fetchAreas() async {
+  Future<List<String>> fetchAreas() async {
     var jwt = await storage.read(key: "token");
-    final response = await http
-        .get(Uri.parse(ApiConstants.apiEndpoint + "payment/areas"), headers: {
+    final response = await http.get(Uri.parse(ApiConstants.apiEndpoint + "payment/areas"), headers: {
       HttpHeaders.authorizationHeader: 'Bearer $jwt',
     });
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
-      print(responseJson);
-     return (responseJson as List).map((area) => Area.fromJson(area)).toList();
+      List<String> areas = [''];
+      for (String area in responseJson as List) {
+        areas.add(area);
+      }
 
+      storage.write(key: 'token', value: response.headers['token']);
+      return areas;
     } else {
-      throw Exception('Unable to process payments');
+      throw Exception('Unable to request payments!');
     }
   }
 
   void _preparePayment() async {
+    setState(() {
+      _busy = false;
+    });
     // fetch Price from API
     ParkingInfo parkInfo = ParkingInfo(_carPlates.text, '200', _selectedArea);
     Navigator.pushNamed(
